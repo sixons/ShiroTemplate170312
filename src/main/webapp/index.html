@@ -1,0 +1,77 @@
+<html>
+<body>
+<h2>Hello World!</h2>
+spring security学习成本，加入项目难度较高；
+
+Subject 认证主体包含两个信息：
+Principals：身份，可以是用户名，邮件，手机号码等等，用来标识一个登录主体身份；
+Credentials：凭证，常见有密码，数字证书等等；
+
+Realm：意思是域，Shiro 从 Realm 中获取验证数据；
+Realm 有很多种类，例如常见的 jdbc realm，jndi realm，text realm。
+
+权限认证和授权
+<img src="/WEB-INF/身份认证流程.png" alt="">
+权限认证，也就是访问控制，即在应用中控制谁能访问哪些资源。
+在权限认证中，最核心的三个要素是：权限，角色和用户；
+权限，即操作资源的权利，比如访问某个页面，以及对某个模块的数据的添加，修改，删除，查看的权利；
+角色，是权限的集合，一中角色可以包含多种权限；
+用户，在 Shiro 中，代表访问系统的用户，即 Subject；
+------------
+<img src="/WEB-INF/授权流程.png" alt="">
+授权有两种：
+1.1 基于角色的访问控制
+1.2 基于权限的访问控制
+1，注解式授权
+@RequiresAuthentication 要求当前 Subject 已经在当前的 session 中被验证通过才能被访问或调用。
+@RequiresGuest 要求当前的 Subject 是一个"guest"，也就是说，他们必须是在之前的 session 中没有被验证或被记住才
+能被访问或调用。
+@RequiresPermissions("account:create") 要求当前的 Subject 被允许一个或多个权限，以便执行注解的方法。
+@RequiresRoles("administrator") 要求当前的 Subject 拥有所有指定的角色。如果他们没有，则该方法将不会被执行，而
+且 AuthorizationException 异常将会被抛出。
+@RequiresUser RequiresUser 注解需要当前的 Subject 是一个应用程序用户才能被注解的类/实例/方法访问或调用。一个“应
+用程序用户”被定义为一个拥有已知身份，或在当前 session 中由于通过验证被确认，或者在之前 session 中的'RememberMe'
+服务被记住。
+2，Jsp 标签授权
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+Guest 标签：用户没有身份验证时显示相应信息，即游客访问信息；
+User 标签：用户已经身份验证/记住我登录后显示相应的信息；
+Authenticated 标签：用户已经身份验证通过，即 Subject.login 登录成功，不是记住我登录的。
+notAuthenticated 标签：用户没有身份验证通过，即没有调用 Subject.login 进行登录，包括记住我自动登录
+的也属于未进行身份验证。
+principal 标签 显示用户身份信息，默认调用 Subject.getPrincipal()获取，即 Primary Principal。
+hasRole 标签 如果当前 Subject 有角色将显示 body 体内容。
+lacksRole 标签 如果当前 Subject 没有角色将显示 body 体内容。
+hasAnyRoles 标签 如果当前 Subject 有任意一个角色（或的关系）将显示 body 体内容。
+hasPermission 标签 如果当前 Subject 有权限将显示 body 体内容。
+lacksPermission 标签 如果当前 Subject 没有权限将显示 body 体内容。
+
+权限划分
+单个权限 query
+单个资源多个权限 user:query user:add 多值 user:query,add
+单个资源所有权限 user:query,add,update,delete user:*
+所有资源某个权限 *:view
+实例级别的权限控制
+单个实例的单个权限 printer:query:lp7200 printer:print:epsoncolor
+所有实例的单个权限 printer:print:*
+所有实例的所有权限 printer:*:*
+单个实例的所有权限 printer:*:lp7200
+单个实例的多个权限 printer:query,print:lp720
+
+shiro的spring配置中强制配置cglib，因为jdk反射代理类实现公共接口，无法获得子类方法；cglib继承被代理类
+
+注解，加在dao、service等
+http://shiro.apache.org/authorization.html#Authorization-AnnotationbasedAuthorization
+jsp标签支持，需要jar包 shiro-web.jar
+http://shiro.apache.org/web.html#Web-taglibrary
+shiro-spring
+http://shiro.apache.org/spring.html
+
+shiro.ini中[urls]的url匹配方式
+? 匹配一个字符 /admin? 可以匹配/admin1 /admin2 但是不能匹配/admin12 /admin
+* 匹配零个或者一个或者多个字符 /admin* 可以匹配 /admin /admin1 /admin12 但是不能匹配/admin/abc
+** 匹配零个或者多个路径 /admin/** 可以匹配/admin /admin/a /admin/a/b
+
+
+</body>
+</html>
